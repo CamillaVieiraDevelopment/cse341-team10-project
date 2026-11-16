@@ -1,4 +1,6 @@
 
+process.env.SESSION_SECRET = 'kizuna-rail-vitest-only-secret';
+
 import { afterAll, beforeAll, beforeEach, inject } from 'vitest';
 import { closeDb, connectToDb, getDb } from '../src/db/connect.js';
 import { closeMongoose, connectMongoose } from '../src/db/mongoose.js';
