@@ -16,6 +16,14 @@ const options = {
             },
         ],
         components: {
+            securitySchemes: {
+                sessionAuth: {
+                    type: 'apiKey',
+                    in: 'cookie',
+                    name: 'connect.sid',
+                    description: 'Session-based authentication. Log in to obtain a session cookie.',
+                },
+            },
             schemas: {
                 Trip: {
                     type: 'object',

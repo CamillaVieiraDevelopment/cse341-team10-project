@@ -9,4 +9,24 @@ const getTripById = async (id) => {
     return Trip.findOne({ id }).lean();
 };
 
-export { getAllTrips, getTripById };
+const updateTrip = async (id, tripData) => {
+    return Trip.findOneAndUpdate(
+        { id },
+        { $set: tripData },
+        {
+            returnDocument: 'after',
+            runValidators: true,
+        }
+    ).lean();
+};
+
+const deleteTrip = async (id) => {
+    return Trip.findOneAndDelete({ id }).lean();
+};
+
+export {
+    getAllTrips,
+    getTripById,
+    updateTrip,
+    deleteTrip,
+};

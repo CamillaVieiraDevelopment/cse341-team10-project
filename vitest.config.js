@@ -5,6 +5,7 @@ export default defineConfig({
     globalSetup: ['./tests/global-setup.js'],
     setupFiles: ['./tests/setup.js'],
     fileParallelism: false,
+    pool: 'threads',
     hookTimeout: 120_000
   }
 });
