@@ -11,6 +11,7 @@
 		"swagger-ui-express": "^5.0.1"
 	},
 	"scripts": {
+		"db:seed-roles": "node --env-file=.env src/db/seed-roles.js",
 		"db:import": "node --env-file=.env src/db/import.js",
 		"dev": "nodemon --env-file=.env server.js",
 		"reset": "node restore.js 3000 3001",
