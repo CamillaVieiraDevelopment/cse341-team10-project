@@ -3,35 +3,94 @@ import Role from '../models/schemas/roles.js';
 import {
     createUser,
     findUserByEmail,
+    findUserByUsername,
     verifyPassword,
 } from '../models/users.js';
 
+const getFormData = (body = {}) => ({
+    name: typeof body.name === 'string' ? body.name.trim() : '',
+    username: typeof body.username === 'string'
+        ? body.username.trim()
+        : '',
+    email: typeof body.email === 'string' ? body.email.trim() : '',
+});
+
+const renderRegistrationError = (res, status, error, formData) => {
+    return res.status(status).render('register', {
+        title: 'Create Account | Kizuna Rail',
+        error,
+        formData,
+    });
+};
+
 const register = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body;
+        const body = req.body || {};
+        const { password } = body;
+        const formData = getFormData(body);
 
-        if (!name?.trim() || !email?.trim() || !password) {
-            return res.status(400).render('register', {
-                title: 'Create Account | Kizuna Rail',
-                error: 'All fields are required.',
-            });
+        if (
+            !formData.name ||
+            !formData.username ||
+            !formData.email ||
+            typeof password !== 'string' ||
+            !password
+        ) {
+            return renderRegistrationError(
+                res,
+                400,
+                'All fields are required.',
+                formData
+            );
+        }
+
+        const normalizedUsername = formData.username.toLowerCase();
+        const normalizedEmail = formData.email.toLowerCase();
+
+        if (
+            normalizedUsername.length < 3 ||
+            normalizedUsername.length > 30 ||
+            !/^[a-z0-9_]+$/.test(normalizedUsername)
+        ) {
+            return renderRegistrationError(
+                res,
+                400,
+                'Username must contain 3 to 30 characters and use only letters, numbers, or underscores.',
+                formData
+            );
         }
 
         if (password.length < 8) {
-            return res.status(400).render('register', {
-                title: 'Create Account | Kizuna Rail',
-                error: 'Password must contain at least 8 characters.',
-            });
+            return renderRegistrationError(
+                res,
+                400,
+                'Password must contain at least 8 characters.',
+                formData
+            );
         }
 
-        const normalizedEmail = email.toLowerCase().trim();
-        const existingUser = await findUserByEmail(normalizedEmail);
+        const existingEmail = await findUserByEmail(normalizedEmail);
 
-        if (existingUser) {
-            return res.status(409).render('register', {
-                title: 'Create Account | Kizuna Rail',
-                error: 'An account with this email already exists.',
-            });
+        if (existingEmail) {
+            return renderRegistrationError(
+                res,
+                409,
+                'An account with this email already exists.',
+                formData
+            );
+        }
+
+        const existingUsername = await findUserByUsername(
+            normalizedUsername
+        );
+
+        if (existingUsername) {
+            return renderRegistrationError(
+                res,
+                409,
+                'This username is already taken.',
+                formData
+            );
         }
 
         const customerRole = await Role.findOne({
@@ -39,14 +98,17 @@ const register = async (req, res, next) => {
         });
 
         if (!customerRole) {
-            return res.status(500).render('register', {
-                title: 'Create Account | Kizuna Rail',
-                error: 'Registration is temporarily unavailable.',
-            });
+            return renderRegistrationError(
+                res,
+                500,
+                'Registration is temporarily unavailable.',
+                formData
+            );
         }
 
         await createUser({
-            name,
+            name: formData.name,
+            username: normalizedUsername,
             email: normalizedEmail,
             password,
             role: customerRole._id,
@@ -55,10 +117,20 @@ const register = async (req, res, next) => {
         return res.redirect('/login?registered=true');
     } catch (error) {
         if (error.code === 11000) {
-            return res.status(409).render('register', {
-                title: 'Create Account | Kizuna Rail',
-                error: 'An account with this email already exists.',
-            });
+            const duplicateUsername =
+                error.keyPattern?.username ||
+                error.keyValue?.username;
+
+            const message = duplicateUsername
+                ? 'This username is already taken.'
+                : 'An account with this email already exists.';
+
+            return renderRegistrationError(
+                res,
+                409,
+                message,
+                getFormData(req.body)
+            );
         }
 
         return next(error);
@@ -67,9 +139,15 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
     try {
-        const { email, password } = req.body;
+        const body = req.body || {};
+        const { email, password } = body;
 
-        if (!email?.trim() || !password) {
+        if (
+            typeof email !== 'string' ||
+            !email.trim() ||
+            typeof password !== 'string' ||
+            !password
+        ) {
             return res.status(400).render('login', {
                 title: 'Login | Kizuna Rail',
                 error: 'Email and password are required.',
@@ -77,9 +155,13 @@ const login = async (req, res, next) => {
             });
         }
 
-        const user = await findUserByEmail(email);
+        const normalizedEmail = email.trim().toLowerCase();
+        const user = await findUserByEmail(normalizedEmail);
 
-        if (!user || !await verifyPassword(password, user.passwordHash)) {
+        if (
+            !user ||
+            !await verifyPassword(password, user.passwordHash)
+        ) {
             return res.status(401).render('login', {
                 title: 'Login | Kizuna Rail',
                 error: 'Invalid email or password.',
@@ -110,6 +192,16 @@ const login = async (req, res, next) => {
             name: user.name,
             role: user.role.name,
         };
+
+        await new Promise((resolve, reject) => {
+            req.session.save((error) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
+                }
+            });
+        });
 
         return res.redirect('/');
     } catch (error) {

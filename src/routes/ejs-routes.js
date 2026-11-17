@@ -8,12 +8,24 @@ import {
 } from './index.js';
 import { trainsPage } from './trains.js';
 import railTripsRouter from './trips.js';
+import { requirePageRole } from '../middleware/auth.js';
 
 const router = Router();
 
 router.get('/', homePage);
 router.get('/about', aboutPage);
 router.get('/trains', trainsPage);
+
+// Protected admin dashboard
+router.get(
+    '/admin',
+    requirePageRole('admin'),
+    (req, res) => {
+        return res.render('admin-dashboard', {
+            title: 'Admin Dashboard',
+        });
+    }
+);
 
 router.use('/trips', railTripsRouter);
 
