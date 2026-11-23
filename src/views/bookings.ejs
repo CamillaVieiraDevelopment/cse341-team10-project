@@ -1,0 +1,49 @@
+<%- include('./partials/header') %>
+
+<section class="bookings-admin-hero">
+    <h1>Bookings Admin</h1>
+    <p>Every booking made on the Kizuna Rail network.</p>
+</section>
+
+<section class="bookings-admin-catalog">
+    <div class="bookings-state" id="bookings-loading">Loading bookings...</div>
+    <div class="bookings-state bookings-error" id="bookings-error" hidden></div>
+    <div class="bookings-state" id="bookings-empty" hidden>No bookings yet.</div>
+
+    <div class="bookings-grid" id="bookings-list"></div>
+
+    <template id="booking-card-template">
+        <article class="booking-card">
+            <header class="booking-card-header">
+                <h2 data-field="id"></h2>
+                <span class="booking-created" data-field="created"></span>
+            </header>
+
+                     <dl class="booking-facts">
+                <div class="booking-detail">
+                    <dt>Trip</dt>
+                    <dd data-field="trip"></dd>
+                </div>
+                <div class="booking-detail">
+                    <dt>Schedule</dt>
+                    <dd data-field="schedule"></dd>
+                </div>
+                <div class="booking-detail">
+                    <dt>Ticket Class</dt>
+                    <dd data-field="ticket-class"></dd>
+                </div>
+                <div class="booking-detail">
+                    <dt>Day</dt>
+                    <dd data-field="day"></dd>
+                </div>
+            </dl>
+
+            <h3 class="booking-passengers-title" data-field="passenger-count"></h3>
+            <ul class="booking-passengers" data-field="passengers"></ul>
+        </article>
+    </template>
+</section>
+
+<script src="/js/bookings-admin.js"></script>
+
+<%- include('./partials/footer') %>
