@@ -38,6 +38,7 @@ Greenfield tutorials teach you syntax. Brownfield projects teach you engineering
 **Do not submit PRs to fix code issues.** The technical debt, bugs, and architectural issues are intentional teaching moments for developers working through the exercises.
 
 **However**, if you find:
+
 - Actual errors that break the learning experience
 - Typos in documentation
 - Ideas for new challenges
@@ -54,10 +55,12 @@ This repository is set up as a **GitHub template**. Use the template feature to 
 2. Select **Create a new repository**
 3. Give your repository a name (`kizuna-rail`) and create it under your GitHub account
 4. Clone your new repository to your local machine:
+
    ```bash
    git clone https://github.com/YOUR-USERNAME/YOUR-REPO-NAME.git
    cd YOUR-REPO-NAME
    ```
+
 5. Install dependencies: `npm install`
 6. Copy `.env.example` to `.env` and set `MONGODB_URI` (and optionally `MONGODB_DB_NAME`) for your MongoDB instance.
 7. Import the starter data with `npm run db:import`. This replaces the starter collections and clears any confirmations in that database.

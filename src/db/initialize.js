@@ -29,3 +29,4 @@ const initializeDatabase = async (db) => {
 };
 
 export { initializeDatabase, starterCollections };
+

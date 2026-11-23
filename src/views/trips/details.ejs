@@ -6,6 +6,58 @@
         Loading trip details...
     </div>
 
+        
+<div class="route-stations">
+    <h2>Trip</h2>
+
+    <div class="stations">
+        <!-- Starting station -->
+        <div class="station">
+            <span class="station-label">Start</span>
+
+            <span class="station-name">
+                <%= details.startStation.charAt(0).toUpperCase() + details.startStation.slice(1) %>
+            </span>
+
+            <button
+                type="button"
+                class="station-details-btn"
+                data-station-id="<%= details.startStation %>">
+                View Station Details
+            </button>
+
+            <div class="station-details" hidden></div>
+        </div>
+
+        <!-- Ending station -->
+        <div class="station">
+            <span class="station-label">End</span>
+
+            <span class="station-name">
+                <%= details.endStation.charAt(0).toUpperCase() + details.endStation.slice(1) %>
+            </span>
+
+            <button
+                type="button"
+                class="station-details-btn"
+                data-station-id="<%= details.endStation %>">
+                View Station Details
+            </button>
+
+            <div class="station-details" hidden></div>
+        </div>
+    </div>
+</div>
+
+
+        <div class="route-operating">
+            <h2>Operating Schedule</h2>
+            <div class="months-grid">
+                <% details.operatingMonths.forEach(function(month) { %>
+                <span class="month-badge"><%= month %></span>
+                <% }); %>
+            </div>
+        </div>
     <div id="trip-details"></div>
 
 
