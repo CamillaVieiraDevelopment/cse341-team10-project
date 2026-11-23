@@ -14,7 +14,7 @@ const stationSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    prefacture: {
+    prefecture: {
       type: String,
       required: true,
       trim: true,

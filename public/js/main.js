@@ -88,8 +88,71 @@ const hookTrainsCatalog = async () => {
     }
 };
 
+
+const hookStationDetails = () => {
+    const buttons = document.querySelectorAll('.station-details-btn');
+
+    buttons.forEach((button) => {
+        button.addEventListener('click', async () => {
+            const stationId = button.dataset.stationId;
+            const detailsEl = button.nextElementSibling;
+
+            if (!detailsEl.hidden) {
+                detailsEl.hidden = true;
+                button.textContent = 'View Station Details';
+                return;
+            }
+
+            try {
+                button.textContent = 'Loading...';
+
+                const response = await fetch(`/api/stations/${stationId}`);
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch station details');
+                }
+
+                const station = await response.json();
+
+                detailsEl.textContent = '';
+
+                const name = document.createElement('h3');
+                name.textContent = station.name;
+                detailsEl.appendChild(name);
+
+                const prefecture = document.createElement('p');
+                prefecture.textContent = `Prefecture: ${station.prefecture}`;
+                detailsEl.appendChild(prefecture);
+
+                const region = document.createElement('p');
+                region.textContent = `Region: ${station.region}`;
+                detailsEl.appendChild(region);
+
+                const facilities = document.createElement('p');
+                facilities.textContent = `Facilities: ${station.facilities.join(', ')}`;
+                detailsEl.appendChild(facilities);
+
+                const description = document.createElement('p');
+                description.textContent = station.description;
+                detailsEl.appendChild(description);
+
+                detailsEl.hidden = false;
+                button.textContent = 'Hide Station Details';
+
+            } catch (error) {
+                console.error(error);
+                detailsEl.textContent = 'Unable to load station details. Please try again.';
+                detailsEl.hidden = false;
+                button.textContent = 'Hide Station Details';
+            }
+        });
+    });
+};
+
+
 document.addEventListener('DOMContentLoaded', () => {
     hookRegionSorter();
     hookSeasonSorter();
     hookTrainsCatalog();
+    hookStationDetails();
 });
