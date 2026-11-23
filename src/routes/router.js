@@ -1,8 +1,10 @@
 import railTripsRouter from './trips.js';
 import stationsApi from "./api-routes.js";
 import { trainsApi, trainsPage } from './trains.js';
+
 import { Router } from 'express';
-import { homePage, aboutPage, testErrorPage } from './index.js';
+import apiRoutes from './api-routes.js';
+import ejsRoutes from './ejs-routes.js';
 
 const router = Router();
 
@@ -27,5 +29,10 @@ router.use('/trips', railTripsRouter);
 
 // Test 500 error page
 router.get('/500', testErrorPage);
+// API routes
+router.use('/api', apiRoutes);
+
+// EJS routes
+router.use('/', ejsRoutes);
 
 export default router;
