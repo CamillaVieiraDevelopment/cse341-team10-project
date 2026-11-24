@@ -1,5 +1,10 @@
 import { Router } from 'express';
-import { getAllBookings } from '../controllers/bookings.js';
+import {
+    getAllBookings,
+    updateBookingHandler,
+    deleteBookingHandler,
+} from '../controllers/bookings.js';
+
 
 const router = Router();
 
@@ -74,7 +79,7 @@ const router = Router();
  * /api/bookings:
  *   get:
  *     summary: Retrieve all bookings
- *     description: Returns every booking, newest first, including passenger details.
+ *     description: Admins receive every booking, newest first. Other signed-in users receive only the bookings where one of the passengers has their email.
  *     tags: [Bookings]
  *     responses:
  *       200:
@@ -97,5 +102,102 @@ const router = Router();
  *                   example: An error occurred while retrieving bookings.
  */
 router.get('/', getAllBookings);
+/**
+ * @swagger
+ * /api/bookings/{id}:
+ *   put:
+ *     summary: Update a booking
+ *     description: Updates the ticket class, day, and passengers of a booking. Admins can update any booking. Other users can update only bookings where they are a passenger.
+ *     tags: [Bookings]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Confirmation code of the booking.
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - ticketClass
+ *               - selectedDay
+ *               - passengers
+ *             properties:
+ *               ticketClass:
+ *                 type: string
+ *               selectedDay:
+ *                 type: string
+ *                 example: monday
+ *               passengers:
+ *                 type: array
+ *                 minItems: 1
+ *                 maxItems: 8
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - firstName
+ *                     - lastName
+ *                     - email
+ *                     - phone
+ *                   properties:
+ *                     firstName:
+ *                       type: string
+ *                     lastName:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     phone:
+ *                       type: string
+ *     responses:
+ *       200:
+ *         description: The updated booking.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Booking'
+ *       400:
+ *         description: Missing or invalid booking fields.
+ *       401:
+ *         description: Authentication required.
+ *       403:
+ *         description: The signed-in user is not an admin or a passenger on this booking.
+ *       404:
+ *         description: Booking not found.
+ *       500:
+ *         description: Internal server error.
+ */
+router.put('/:id', updateBookingHandler);
+
+/**
+ * @swagger
+ * /api/bookings/{id}:
+ *   delete:
+ *     summary: Delete a booking
+ *     description: Admins can delete any booking. Other users can delete only bookings where they are a passenger.
+ *     tags: [Bookings]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Confirmation code of the booking.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Booking deleted.
+ *       401:
+ *         description: Authentication required.
+ *       403:
+ *         description: The signed-in user is not an admin or a passenger on this booking.
+ *       404:
+ *         description: Booking not found.
+ *       500:
+ *         description: Internal server error.
+ */
+router.delete('/:id', deleteBookingHandler);
 
 export default router;

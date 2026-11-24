@@ -105,3 +105,71 @@
         }
     }
 }
+.bookings-admin-catalog {
+    .booking-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+        margin-top: var(--space-md);
+    }
+
+    .booking-button {
+        padding: var(--space-xs) var(--space-md);
+        border: 1px solid var(--clr-primary);
+        border-radius: var(--radius-sm);
+        background-color: transparent;
+        color: var(--clr-primary);
+        font: inherit;
+        cursor: pointer;
+    }
+
+    .booking-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .booking-button-secondary {
+        border-color: var(--clr-text-secondary);
+        color: var(--clr-text-secondary);
+    }
+
+    .booking-button-danger {
+        border-color: #8f1f1f;
+        color: #8f1f1f;
+    }
+
+    .booking-edit-form {
+        display: grid;
+        gap: var(--space-md);
+    }
+
+    .booking-edit-label {
+        display: grid;
+        gap: var(--space-xxs);
+        color: var(--clr-text-secondary);
+        font-size: var(--font-size-sm);
+    }
+
+    .booking-edit-input {
+        padding: var(--space-xs);
+        border: 1px solid #b7c4e8;
+        border-radius: var(--radius-sm);
+        color: var(--clr-text-primary);
+        font: inherit;
+    }
+
+    .booking-edit-passenger {
+        display: grid;
+        gap: var(--space-sm);
+        grid-template-columns: 1fr 1fr;
+        margin: 0;
+        padding: var(--space-sm);
+        border: 1px solid #cfdbf7;
+        border-radius: var(--radius-sm);
+
+        legend {
+            padding-inline: var(--space-xs);
+            color: var(--clr-text-primary);
+        }
+    }
+}
