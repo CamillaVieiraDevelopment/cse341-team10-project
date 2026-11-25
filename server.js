@@ -1,11 +1,14 @@
 import app from './app.js';
 import { connectToDb } from './src/db/connect.js';
 import { connectMongoose } from './src/db/mongoose.js';
+import dns from 'node:dns';
 
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
 const PORT = process.env.PORT || 3000;
 
-// Connect to MongoDB before accepting requests.
+dns.setServers(['8.8.8.8', '8.8.4.4']);
+
+// Connect to both MongoDB clients before accepting requests.
 await connectToDb();
 await connectMongoose();
 
@@ -14,7 +17,7 @@ if (NODE_ENV.includes('dev')) {
     const ws = await import('ws');
 
     try {
-        const wsPort = parseInt(PORT) + 1;
+        const wsPort = parseInt(PORT, 10) + 1;
         const wsServer = new ws.WebSocketServer({ port: wsPort });
 
         wsServer.on('listening', () => {
@@ -29,6 +32,6 @@ if (NODE_ENV.includes('dev')) {
     }
 }
 
-app.listen(PORT, "0.0.0.0", () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
 });

@@ -28,6 +28,11 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use(globalMiddleware);
+// Swagger JSON specification
+app.get('/api-docs/swagger.json', (req, res) => {
+    return  res.json(swaggerSpec);
+});
+
 // Swagger API documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/', routes);
