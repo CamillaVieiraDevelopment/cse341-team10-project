@@ -24,34 +24,66 @@ const getAllBookings = async (req, res) => {
 
 // EJS Controllers
 
-const bookingPage = async (req, res) => {
-    const { scheduleId } = req.params;
+const bookingPage = async (req, res, next) => {
+    try {
+        const { scheduleId } = req.params;
+        const db = getDb();
 
-    const db = getDb();
-    const schedule = await db.collection('schedules').findOne({ id: Number(scheduleId) });
-    const trip = await db.collection('trips').findOne({ id: schedule.tripId });
-    const ticketClasses = await db.collection('ticketClasses').find({}).toArray();
-    const ticketOptions = ticketClasses.map((ticketClass) => ({
-        class: ticketClass.class,
-        name: ticketClass.name,
-        price: trip.distance * ticketClass.pricePerKm,
-        amenities: ticketClass.amenities,
-        description: ticketClass.description
-    }));
+        const schedule = await db.collection('schedules').findOne({
+            id: Number(scheduleId),
+        });
 
-    res.render('trips/book', {
-        title: 'Book Trip',
-        schedule,
-        ticketOptions
-    });
+        if (!schedule) {
+            const error = new Error('Schedule not found');
+            error.status = 404;
+            return next(error);
+        }
+
+        const trip = await db.collection('trips').findOne({
+            id: schedule.tripId,
+        });
+
+        if (!trip) {
+            const error = new Error('Trip not found');
+            error.status = 404;
+            return next(error);
+        }
+
+        const ticketClasses = await db.collection('ticketClasses')
+            .find({})
+            .toArray();
+
+        const ticketOptions = ticketClasses.map((ticketClass) => ({
+            class: ticketClass.class,
+            name: ticketClass.name,
+            price: trip.distance * ticketClass.pricePerKm,
+            amenities: ticketClass.amenities,
+            description: ticketClass.description,
+        }));
+
+        return res.render('trips/book', {
+            title: 'Book Trip',
+            schedule,
+            ticketOptions,
+        });
+    } catch (error) {
+        return next(error);
+    }
 };
 
 const processBookingRequest = async (req, res, next) => {
     try {
-        const { scheduleId, tripId, ticketClass, selectedDay, passengers } = req.body ?? {};
+        const {
+            scheduleId,
+            tripId,
+            ticketClass,
+            selectedDay,
+            passengers,
+        } = req.body ?? {};
 
         const booking = await createBooking({
             id: generateConfirmationCode(),
+            userId: req.user.id,
             scheduleId,
             tripId,
             ticketClass,
@@ -81,8 +113,16 @@ const bookingConfirmationPage = async (req, res, next) => {
         if (!booking) {
             const notFoundError = new Error('Booking not found');
             notFoundError.status = 404;
-
             return next(notFoundError);
+        }
+
+        const isOwner = booking.userId === req.user.id;
+        const isAdmin = req.user.role === 'admin';
+
+        if (!isOwner && !isAdmin) {
+            return res.status(403).render('errors/403', {
+                title: 'Access Denied',
+            });
         }
 
         return res.render('trips/confirm', {

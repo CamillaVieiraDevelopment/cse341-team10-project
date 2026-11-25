@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+﻿import mongoose from "mongoose";
 
 const passengerSchema = new mongoose.Schema(
   {
@@ -17,6 +17,11 @@ const bookingSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
+    },
+    userId: {
+      type: String,
+      required: false,
+      index: true,
     },
     scheduleId: {
       type: Number,

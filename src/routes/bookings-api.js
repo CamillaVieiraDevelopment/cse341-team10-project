@@ -1,5 +1,6 @@
-import { Router } from 'express';
+﻿import { Router } from 'express';
 import { getAllBookings } from '../controllers/bookings.js';
+import { requireApiRole } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -96,6 +97,6 @@ const router = Router();
  *                   type: string
  *                   example: An error occurred while retrieving bookings.
  */
-router.get('/', getAllBookings);
+router.get('/', requireApiRole('admin'), getAllBookings);
 
 export default router;

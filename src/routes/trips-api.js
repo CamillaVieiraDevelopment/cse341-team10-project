@@ -1,8 +1,9 @@
-
+﻿
 import { Router } from 'express';
 import {
     getAllTripsHandler,
     getTripByIdHandler,
+    getTripSchedulesHandler,
 } from '../controllers/trips.js';
 
 const router = Router();
@@ -27,6 +28,33 @@ const router = Router();
  *         description: Internal server error.
  */
 router.get('/', getAllTripsHandler);
+
+/**
+ * @swagger
+ * /api/trips/{id}/schedules:
+ *   get:
+ *     summary: Retrieve schedules for a specific trip
+ *     description: Returns all active schedules for a specific train trip, ordered by departure time.
+ *     tags: [Trips]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Unique identifier of the trip.
+ *         schema:
+ *           type: string
+ *         example: sakura-valley
+ *     responses:
+ *       200:
+ *         description: Active schedules retrieved successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *       500:
+ *         description: Internal server error.
+ */
+router.get('/:id/schedules', getTripSchedulesHandler);
 
 /**
  * @swagger
