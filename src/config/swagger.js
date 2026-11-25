@@ -108,6 +108,52 @@ const options = {
                         },
                     },
                 },
+
+                TicketClass: {
+                    type: 'object',
+                    properties: {
+                        _id: {
+                            type: 'string',
+                        },
+                        class: {
+                            type: 'string',
+                            enum: ['standard', 'premium', 'first'],
+                        },
+                        name: {
+                            type: 'string',
+                        },
+                        pricePerKm: {
+                            type: 'number',
+                        },
+                        amenities: {
+                            type: 'array',
+                            items: {
+                                type: 'string',
+                            },
+                        },
+                        description: {
+                            type: 'string',
+                        },
+                        availableDays: {
+                            type: 'array',
+                            items: {
+                                type: 'string',
+                                enum: [
+                                    'monday',
+                                    'tuesday',
+                                    'wednesday',
+                                    'thursday',
+                                    'friday',
+                                    'saturday',
+                                    'sunday',
+                                ],
+                            },
+                        },
+                        available: {
+                            type: 'boolean',
+                        },
+                    },
+                },
             },
         },
     },
