@@ -190,8 +190,10 @@ const login = async (req, res, next) => {
         req.session.user = {
             id: user._id.toString(),
             name: user.name,
+            email: user.email,
             role: user.role.name,
         };
+
 
         await new Promise((resolve, reject) => {
             req.session.save((error) => {
