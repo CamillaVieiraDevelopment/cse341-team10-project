@@ -4,23 +4,38 @@ import {
     getTripDetailsPage,
 } from '../controllers/trips.js';
 
-import { bookingPage, processBookingRequest } from './book.js';
+import {
+    bookingPage,
+    processBookingRequest,
+} from './book.js';
+
 import confirmationPage from './confirm.js';
 import { Router } from 'express';
+import { requirePageLogin } from '../middleware/auth.js';
 
 const router = Router();
 
-// List all trips
 router.get('/', getTripsListPage);
-
-// Trip details page
 router.get('/:tripId', getTripDetailsPage);
 
-// Book ticket
-router.get('/booking/:scheduleId', bookingPage);
-router.post('/book', processBookingRequest);
+// Booking requires an authenticated user.
+router.get(
+    '/booking/:scheduleId',
+    requirePageLogin,
+    bookingPage
+);
 
-// Booking confirmation page
-router.get('/confirmation/:confirmationId', confirmationPage);
+router.post(
+    '/book',
+    requirePageLogin,
+    processBookingRequest
+);
+
+// Confirmation requires authentication and ownership validation.
+router.get(
+    '/confirmation/:confirmationId',
+    requirePageLogin,
+    confirmationPage
+);
 
 export default router;
