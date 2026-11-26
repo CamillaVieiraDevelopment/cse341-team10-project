@@ -29,7 +29,7 @@ export async function updateBooking(id, updates) {
   }
 
   existingBooking.set(updates);
-  await existingBooking.save();
+  await existingBooking.save({ validateModifiedOnly: true });
 
   return existingBooking.toObject();
 }
