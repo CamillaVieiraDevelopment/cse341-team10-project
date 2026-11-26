@@ -6,6 +6,8 @@ import { initializeDatabase } from '../src/db/initialize.js';
 
 const connectionString = inject('MONGODB_TEST_URI');
 
+process.env.SESSION_SECRET ||= 'test-session-secret';
+
 beforeAll(async () => {
   const databaseName = 'kizuna-rail-test';
 
