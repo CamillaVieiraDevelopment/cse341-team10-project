@@ -1,3 +1,4 @@
+﻿import { Router } from 'express';
 
 import {
     getTripsListPage,
@@ -9,22 +10,22 @@ import {
     processBookingRequest,
     bookingConfirmationPage,
 } from '../controllers/bookings.js';
-import { Router } from 'express';
 
+import { requirePageLogin } from '../middleware/auth.js';
 
 const router = Router();
 
-// List all trips
+// Public trip pages
 router.get('/', getTripsListPage);
-
-// Trip details page
 router.get('/:tripId', getTripDetailsPage);
 
-// Book ticket
-router.get('/booking/:scheduleId', bookingPage);
-router.post('/book', processBookingRequest);
-
-// Booking confirmation page
-router.get('/confirmation/:confirmationId', bookingConfirmationPage);
+// Protected booking pages
+router.get('/booking/:scheduleId', requirePageLogin, bookingPage);
+router.post('/book', requirePageLogin, processBookingRequest);
+router.get(
+    '/confirmation/:confirmationId',
+    requirePageLogin,
+    bookingConfirmationPage
+);
 
 export default router;

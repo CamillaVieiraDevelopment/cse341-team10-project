@@ -1,5 +1,5 @@
-
-import { getAllTrips, getTripById } from '../models/trips.js';
+﻿import { getAllTrips, getTripById } from '../models/trips.js';
+import { getDb } from '../db/connect.js';
 
 // API Controllers
 
@@ -38,6 +38,26 @@ const getTripByIdHandler = async (req, res) => {
     }
 };
 
+const getTripSchedulesHandler = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const db = getDb();
+
+        const schedules = await db.collection('schedules')
+            .find({ tripId: id, status: true })
+            .sort({ departureTime: 1 })
+            .toArray();
+
+        return res.status(200).json(schedules);
+    } catch (error) {
+        console.error('Error retrieving trip schedules:', error);
+
+        return res.status(500).json({
+            message: 'An error occurred while retrieving trip schedules.',
+        });
+    }
+};
+
 // EJS Controllers
 
 const getTripsListPage = (req, res) => {
@@ -55,6 +75,7 @@ const getTripDetailsPage = (req, res) => {
 export {
     getAllTripsHandler,
     getTripByIdHandler,
+    getTripSchedulesHandler,
     getTripsListPage,
     getTripDetailsPage,
 };

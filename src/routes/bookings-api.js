@@ -1,10 +1,10 @@
-import { Router } from 'express';
+﻿import { Router } from 'express';
 import {
     getAllBookings,
     updateBookingHandler,
     deleteBookingHandler,
 } from '../controllers/bookings.js';
-
+import { requireApiLogin } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -25,6 +25,9 @@ const router = Router();
  *         id:
  *           type: string
  *           description: Unique confirmation code for the booking.
+ *         userId:
+ *           type: string
+ *           description: Id of the user who made the booking.
  *         scheduleId:
  *           type: integer
  *           description: Id of the schedule that was booked.
@@ -78,7 +81,7 @@ const router = Router();
  * @swagger
  * /api/bookings:
  *   get:
- *     summary: Retrieve all bookings
+ *     summary: Retrieve bookings
  *     description: Admins receive every booking, newest first. Other signed-in users receive only the bookings where one of the passengers has their email.
  *     tags: [Bookings]
  *     responses:
@@ -90,6 +93,16 @@ const router = Router();
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Booking'
+ *       401:
+ *         description: Authentication required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Authentication required.
  *       500:
  *         description: Internal server error.
  *         content:
@@ -101,7 +114,8 @@ const router = Router();
  *                   type: string
  *                   example: An error occurred while retrieving bookings.
  */
-router.get('/', getAllBookings);
+router.get('/', requireApiLogin, getAllBookings);
+
 /**
  * @swagger
  * /api/bookings/{id}:
@@ -170,7 +184,7 @@ router.get('/', getAllBookings);
  *       500:
  *         description: Internal server error.
  */
-router.put('/:id', updateBookingHandler);
+router.put('/:id', requireApiLogin, updateBookingHandler);
 
 /**
  * @swagger
@@ -198,6 +212,6 @@ router.put('/:id', updateBookingHandler);
  *       500:
  *         description: Internal server error.
  */
-router.delete('/:id', deleteBookingHandler);
+router.delete('/:id', requireApiLogin, deleteBookingHandler);
 
 export default router;
