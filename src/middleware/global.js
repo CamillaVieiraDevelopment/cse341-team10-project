@@ -1,3 +1,5 @@
+import { loadSessionUser } from './auth.js';
+
 /**
  * Helper function to set all expected res.locals values
  */
@@ -11,4 +13,10 @@ const setLocalVariables = (req, res, next) => {
     next();
 };
 
-export default setLocalVariables;
+// Load the authenticated user before setting global variables.
+const globalMiddleware = [
+    loadSessionUser,
+    setLocalVariables,
+];
+
+export default globalMiddleware;
