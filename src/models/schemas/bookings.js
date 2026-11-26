@@ -20,7 +20,8 @@ const bookingSchema = new mongoose.Schema(
     },
     userId: {
       type: String,
-      required: false,
+      required: true,
+      trim: true,
       index: true,
     },
     scheduleId: {

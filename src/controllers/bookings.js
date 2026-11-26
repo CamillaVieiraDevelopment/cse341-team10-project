@@ -1,3 +1,4 @@
+
 import { getDb } from '../db/connect.js';
 import { generateConfirmationCode } from '../includes/helpers.js';
 import {
@@ -75,19 +76,66 @@ const processBookingRequest = async (req, res, next) => {
     try {
         const {
             scheduleId,
-            tripId,
             ticketClass,
             selectedDay,
             passengers,
         } = req.body ?? {};
 
+        // Validate required fields
+        if (!scheduleId || !ticketClass || !selectedDay) {
+            return res.status(400).send(
+                'Please complete all required booking fields.'
+            );
+        }
+
+        // Validate schedule ID
+        const parsedScheduleId = Number(scheduleId);
+
+        if (!Number.isInteger(parsedScheduleId) || parsedScheduleId <= 0) {
+            return res.status(400).send('Invalid schedule ID.');
+        }
+
+        const db = getDb();
+
+        // Retrieve the schedule from the database
+        const schedule = await db.collection('schedules').findOne({
+            id: parsedScheduleId,
+        });
+
+        if (!schedule) {
+            return res.status(404).send('Schedule not found.');
+        }
+
+        // Validate selected operating day
+        const normalizedDay = String(selectedDay).trim().toLowerCase();
+
+        const scheduleDays = Array.isArray(schedule.daysOfWeek)
+            ? schedule.daysOfWeek.map(day => String(day).trim().toLowerCase())
+            : [];
+
+        if (!scheduleDays.includes(normalizedDay)) {
+            return res.status(400).send(
+                'The selected day is not available for this schedule.'
+            );
+        }
+
+        // Validate that the trip associated with the schedule exists
+        const trip = await db.collection('trips').findOne({
+            id: schedule.tripId,
+        });
+
+        if (!trip) {
+            return res.status(404).send('Trip not found.');
+        }
+
+        // Create booking using trusted database values
         const booking = await createBooking({
             id: generateConfirmationCode(),
             userId: req.user.id,
-            scheduleId,
-            tripId,
-            ticketClass,
-            selectedDay,
+            scheduleId: parsedScheduleId,
+            tripId: schedule.tripId,
+            ticketClass: String(ticketClass).trim().toLowerCase(),
+            selectedDay: normalizedDay,
             passengers: Array.isArray(passengers) ? passengers : [],
         });
 
