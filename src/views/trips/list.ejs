@@ -5,15 +5,28 @@
     </h1>
 
     <div id="filters">
-        Search by Region:
-        <select id="region-filter">
-            <option value="all">All Regions</option>
-        </select>
+        <div class="search-group">
+            <label for="trip-search">Search trips:</label>
+            <input type="search" id="trip-search" placeholder="Search by trip name or description..." maxlength="100">
+        </div>
 
-        Search by Season:
-        <select id="season-filter">
-            <option value="all">Any Season</option>
-        </select>
+        <div class="filter-group">
+            <label for="region-filter">Search by Region:</label>
+            <select id="region-filter">
+                <option value="">All Regions</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="season-filter">Search by Season:</label>
+            <select id="season-filter">
+                <option value="">Any Season</option>
+            </select>
+        </div>
+
+        <button type="button" id="clear-filters">
+            Clear Filters
+        </button>
     </div>
 
     <div id="trips-status" role="status" aria-live="polite">

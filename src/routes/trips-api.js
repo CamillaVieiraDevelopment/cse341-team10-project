@@ -12,8 +12,8 @@ const router = Router();
  * @swagger
  * /api/trips:
  *   get:
- *     summary: Retrieve trips with pagination
- *     description: Returns a paginated list of available train trips.
+ *     summary: Retrieve trips with pagination, search, and filters
+ *     description: Returns a paginated list of train trips, with optional filtering by region and season and keyword search across trip names and descriptions.
  *     tags: [Trips]
  *     parameters:
  *       - in: query
@@ -33,9 +33,30 @@ const router = Router();
  *           minimum: 1
  *           maximum: 50
  *           default: 10
+ *       - in: query
+ *         name: region
+ *         required: false
+ *         description: Filter trips by region.
+ *         schema:
+ *           type: string
+ *           maxLength: 50
+ *       - in: query
+ *         name: season
+ *         required: false
+ *         description: Filter trips by best season.
+ *         schema:
+ *           type: string
+ *           maxLength: 50
+ *       - in: query
+ *         name: search
+ *         required: false
+ *         description: Search keywords in trip names and descriptions (case-insensitive).
+ *         schema:
+ *           type: string
+ *           maxLength: 100
  *     responses:
  *       200:
- *         description: Paginated list of trips retrieved successfully.
+ *         description: Filtered and paginated list of trips retrieved successfully.
  *         content:
  *           application/json:
  *             schema:
@@ -45,6 +66,28 @@ const router = Router();
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Trip'
+ *                 filters:
+ *                   type: object
+ *                   properties:
+ *                     region:
+ *                       type: string
+ *                       nullable: true
+ *                     season:
+ *                       type: string
+ *                       nullable: true
+ *                     search:
+ *                       type: string
+ *                 availableFilters:
+ *                   type: object
+ *                   properties:
+ *                     regions:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     seasons:
+ *                       type: array
+ *                       items:
+ *                         type: string
  *                 pagination:
  *                   type: object
  *                   properties:
@@ -56,12 +99,12 @@ const router = Router();
  *                       example: 10
  *                     totalItems:
  *                       type: integer
- *                       example: 25
+ *                       example: 2
  *                     totalPages:
  *                       type: integer
- *                       example: 3
+ *                       example: 1
  *       400:
- *         description: Invalid pagination parameters.
+ *         description: Invalid pagination, filter, or search parameters.
  *       500:
  *         description: Internal server error.
  */
