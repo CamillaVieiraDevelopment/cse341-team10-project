@@ -4,7 +4,11 @@ const regionFilter = document.querySelector('#region-filter');
 const seasonFilter = document.querySelector('#season-filter');
 const tripsStatus = document.querySelector('#trips-status');
 
-let allTrips = [];
+const pageSize = 10;
+
+let currentPage = 1;
+let currentTrips = [];
+let pagination = null;
 
 const escapeHTML = (value) => {
     return String(value ?? '').replace(/[&<>"']/g, (character) => {
@@ -13,7 +17,7 @@ const escapeHTML = (value) => {
             '<': '&lt;',
             '>': '&gt;',
             '"': '&quot;',
-            "'": '&#39;',
+            "'": '&#39;'
         };
 
         return entities[character];
@@ -25,6 +29,10 @@ const populateFilters = (trips) => {
     const seasons = [...new Set(trips.map((trip) => trip.bestSeason))].sort();
 
     regions.forEach((region) => {
+        if ([...regionFilter.options].some((option) => option.value === region)) {
+            return;
+        }
+
         const option = document.createElement('option');
         option.value = region;
         option.textContent = region.charAt(0).toUpperCase() + region.slice(1);
@@ -32,6 +40,10 @@ const populateFilters = (trips) => {
     });
 
     seasons.forEach((season) => {
+        if ([...seasonFilter.options].some((option) => option.value === season)) {
+            return;
+        }
+
         const option = document.createElement('option');
         option.value = season;
         option.textContent = season.charAt(0).toUpperCase() + season.slice(1);
@@ -43,7 +55,7 @@ const renderTrips = (trips) => {
     tripsContainer.innerHTML = '';
 
     if (trips.length === 0) {
-        tripsStatus.textContent = 'No trips found for the selected filters.';
+        tripsStatus.textContent = 'No trips found.';
         return;
     }
 
@@ -101,7 +113,7 @@ const renderTrips = (trips) => {
 
             <div class="highlights">
                 <div class="highlights-list">
-                    ${trip.highlights.map((highlight) =>
+                    ${(trip.highlights || []).map((highlight) =>
             `<span class="highlight-tag">${escapeHTML(highlight)}</span>`
         ).join('')}
                 </div>
@@ -123,10 +135,7 @@ const applyFilters = () => {
     const selectedRegion = regionFilter.value;
     const selectedSeason = seasonFilter.value;
 
-    console.log('Selected region:', selectedRegion);
-    console.log('Selected season:', selectedSeason);
-
-    const filteredTrips = allTrips.filter((trip) => {
+    const filteredTrips = currentTrips.filter((trip) => {
         const matchesRegion =
             selectedRegion === 'all' || trip.region === selectedRegion;
 
@@ -136,27 +145,73 @@ const applyFilters = () => {
         return matchesRegion && matchesSeason;
     });
 
-    console.log('Filtered trips:', filteredTrips);
-
     renderTrips(filteredTrips);
 };
-const loadTrips = async () => {
+
+const renderPagination = () => {
+    let paginationContainer = document.querySelector('#pagination-controls');
+
+    if (!paginationContainer) {
+        paginationContainer = document.createElement('div');
+        paginationContainer.id = 'pagination-controls';
+        paginationContainer.className = 'pagination-controls';
+        tripsContainer.after(paginationContainer);
+    }
+
+    paginationContainer.innerHTML = '';
+
+    if (!pagination || pagination.totalPages <= 1) {
+        return;
+    }
+
+    const previousButton = document.createElement('button');
+    previousButton.textContent = 'Previous';
+    previousButton.type = 'button';
+    previousButton.disabled = currentPage === 1;
+    previousButton.addEventListener('click', () => {
+        loadTrips(currentPage - 1);
+    });
+
+    const pageInfo = document.createElement('span');
+    pageInfo.textContent =
+        `Page ${pagination.currentPage} of ${pagination.totalPages}`;
+
+    const nextButton = document.createElement('button');
+    nextButton.textContent = 'Next';
+    nextButton.type = 'button';
+    nextButton.disabled = currentPage === pagination.totalPages;
+    nextButton.addEventListener('click', () => {
+        loadTrips(currentPage + 1);
+    });
+
+    paginationContainer.append(previousButton, pageInfo, nextButton);
+};
+
+const loadTrips = async (page = 1) => {
     try {
         tripsStatus.textContent = 'Loading trips...';
 
-        const response = await fetch('/api/trips');
+        const response = await fetch(
+            `/api/trips?page=${page}&limit=${pageSize}`
+        );
 
         if (!response.ok) {
             throw new Error(`HTTP error: ${response.status}`);
         }
 
-        allTrips = await response.json();
+        const data = await response.json();
 
-        populateFilters(allTrips);
-        renderTrips(allTrips);
+        currentTrips = data.trips;
+        pagination = data.pagination;
+        currentPage = pagination.currentPage;
+
+        populateFilters(currentTrips);
+        applyFilters();
+        renderPagination();
     } catch (error) {
         console.error('Error loading trips:', error);
-        tripsStatus.textContent = 'Unable to load trips. Please try again later.';
+        tripsStatus.textContent =
+            'Unable to load trips. Please try again later.';
     }
 };
 
