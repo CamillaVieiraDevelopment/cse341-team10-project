@@ -12,18 +12,56 @@ const router = Router();
  * @swagger
  * /api/trips:
  *   get:
- *     summary: Retrieve all trips
- *     description: Returns a list of all available train trips.
+ *     summary: Retrieve trips with pagination
+ *     description: Returns a paginated list of available train trips.
  *     tags: [Trips]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number (defaults to 1).
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         description: Number of trips per page (defaults to 10, maximum 50).
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 50
+ *           default: 10
  *     responses:
  *       200:
- *         description: A list of trips retrieved successfully.
+ *         description: Paginated list of trips retrieved successfully.
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Trip'
+ *               type: object
+ *               properties:
+ *                 trips:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Trip'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     currentPage:
+ *                       type: integer
+ *                       example: 1
+ *                     pageSize:
+ *                       type: integer
+ *                       example: 10
+ *                     totalItems:
+ *                       type: integer
+ *                       example: 25
+ *                     totalPages:
+ *                       type: integer
+ *                       example: 3
+ *       400:
+ *         description: Invalid pagination parameters.
  *       500:
  *         description: Internal server error.
  */
