@@ -9,37 +9,46 @@
     <div class="bookings-state" id="bookings-loading">Loading bookings...</div>
     <div class="bookings-state bookings-error" id="bookings-error" hidden></div>
     <div class="bookings-state" id="bookings-empty" hidden>No bookings yet.</div>
-
+    <div class="bookings-state" id="bookings-message" role="status" hidden></div>
     <div class="bookings-grid" id="bookings-list"></div>
 
-    <template id="booking-card-template">
+       <template id="booking-card-template">
         <article class="booking-card">
             <header class="booking-card-header">
                 <h2 data-field="id"></h2>
                 <span class="booking-created" data-field="created"></span>
             </header>
 
-                     <dl class="booking-facts">
-                <div class="booking-detail">
-                    <dt>Trip</dt>
-                    <dd data-field="trip"></dd>
-                </div>
-                <div class="booking-detail">
-                    <dt>Schedule</dt>
-                    <dd data-field="schedule"></dd>
-                </div>
-                <div class="booking-detail">
-                    <dt>Ticket Class</dt>
-                    <dd data-field="ticket-class"></dd>
-                </div>
-                <div class="booking-detail">
-                    <dt>Day</dt>
-                    <dd data-field="day"></dd>
-                </div>
-            </dl>
+            <div data-field="view">
+                <dl class="booking-facts">
+                    <div class="booking-detail">
+                        <dt>Trip</dt>
+                        <dd data-field="trip"></dd>
+                    </div>
+                    <div class="booking-detail">
+                        <dt>Schedule</dt>
+                        <dd data-field="schedule"></dd>
+                    </div>
+                    <div class="booking-detail">
+                        <dt>Ticket Class</dt>
+                        <dd data-field="ticket-class"></dd>
+                    </div>
+                    <div class="booking-detail">
+                        <dt>Day</dt>
+                        <dd data-field="day"></dd>
+                    </div>
+                </dl>
 
-            <h3 class="booking-passengers-title" data-field="passenger-count"></h3>
-            <ul class="booking-passengers" data-field="passengers"></ul>
+                <h3 class="booking-passengers-title" data-field="passenger-count"></h3>
+                <ul class="booking-passengers" data-field="passengers"></ul>
+
+                <div class="booking-actions">
+                    <button type="button" class="booking-button" data-action="edit">Edit</button>
+                    <button type="button" class="booking-button booking-button-danger" data-action="delete">Delete</button>
+                </div>
+            </div>
+
+            <div data-field="edit" hidden></div>
         </article>
     </template>
 </section>
