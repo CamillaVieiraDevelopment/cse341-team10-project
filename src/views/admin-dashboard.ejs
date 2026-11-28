@@ -1,7 +1,21 @@
-﻿<%- include('./partials/header', { title: 'Admin Dashboard' }) %>
-    <section class="content">
-        <h1>Admin Dashboard</h1>
-        <p>Welcome to the admin dashboard.</p>
-    </section>
+﻿
+<%- include('./partials/header', { title: 'Admin Dashboard' }) %>
 
-    <%- include('./partials/footer') %>
+<section class="content">
+    <h1>Admin Dashboard</h1>
+
+    <p>Welcome, <%= user.name %>!</p>
+
+    <h2>Administration</h2>
+
+    <ul>
+        <li>
+            <a href="/bookings-admin">Booking Administration</a>
+        </li>
+        <li>
+            <a href="/users-admin">User Administration</a>
+        </li>
+    </ul>
+</section>
+
+<%- include('./partials/footer') %>

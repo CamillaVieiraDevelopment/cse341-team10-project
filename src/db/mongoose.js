@@ -1,5 +1,9 @@
 
 import mongoose from 'mongoose';
+import dns from 'node:dns';
+
+// Configure DNS for all MongoDB scripts and application connections.
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 let isConnected = false;
 

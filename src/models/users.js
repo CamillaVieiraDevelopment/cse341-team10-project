@@ -34,9 +34,17 @@ const verifyPassword = async (password, passwordHash) => {
     return bcrypt.compare(password, passwordHash);
 };
 
+const getAllUsers = async () => {
+    return User.find()
+        .select('name username email role')
+        .populate('role', 'name')
+        .sort({ name: 1 })
+        .lean();
+};
 export {
     createUser,
     findUserByEmail,
     findUserByUsername,
     verifyPassword,
+    getAllUsers,
 };

@@ -5,6 +5,7 @@ import {
     createBooking,
     getAllBookings as findAllBookings,
     getBookingById,
+    getBookingsByPassengerEmail,
 } from '../models/bookings.js';
 
 // API Controllers
@@ -18,7 +19,7 @@ const getAllBookings = async (req, res) => {
         console.error('Error retrieving bookings:', error);
 
         return res.status(500).json({
-            message: 'An error occurred while retrieving bookings.',
+           message: 'An error occurred while retrieving bookings.',
         });
     }
 };
@@ -188,10 +189,28 @@ const bookingsAdminPage = (req, res) => {
     });
 };
 
+// Get bookings associated with the logged-in user.
+const getMyBookings = async (req, res) => {
+    try {
+        const bookings = await getBookingsByPassengerEmail(
+            req.user.email
+        );
+
+        return res.status(200).json(bookings);
+    } catch (error) {
+        console.error('Error retrieving user bookings:', error);
+
+        return res.status(500).json({
+            message: 'An error occurred while retrieving your bookings.',
+        });
+    }
+};
+
 export {
     getAllBookings,
     bookingPage,
     processBookingRequest,
     bookingConfirmationPage,
     bookingsAdminPage,
+    getMyBookings,
 };

@@ -1,9 +1,13 @@
 import app from './app.js';
 import { connectToDb } from './src/db/connect.js';
 import { connectMongoose } from './src/db/mongoose.js';
+import dns from 'node:dns';
 
 const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || 'production';
 const PORT = process.env.PORT || 3000;
+
+// Configure DNS before connecting to MongoDB.
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 // Connect to MongoDB before accepting requests.
 await connectToDb();

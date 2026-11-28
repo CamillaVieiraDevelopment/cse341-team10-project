@@ -1,7 +1,12 @@
 ﻿import { Router } from 'express';
-import { getAllBookings } from '../controllers/bookings.js';
-import { requireApiRole } from '../middleware/auth.js';
-
+import {
+    getAllBookings,
+    getMyBookings,
+} from '../controllers/bookings.js';
+import {
+    requireApiLogin,
+    requireApiRole,
+} from '../middleware/auth.js';
 const router = Router();
 
 /**
@@ -69,6 +74,25 @@ const router = Router();
  *           format: date-time
  *           readOnly: true
  */
+
+/**
+ * @swagger
+ * /api/bookings/mine:
+ *   get:
+ *     summary: Retrieve bookings associated with the logged-in user
+ *     description: Returns bookings where the authenticated user's email matches a passenger's email.
+ *     tags: [Bookings]
+ *     security:
+ *       - sessionAuth: []
+ *     responses:
+ *       200:
+ *         description: User bookings retrieved successfully.
+ *       401:
+ *         description: Authentication required.
+ *       500:
+ *         description: Internal server error.
+ */
+router.get('/mine', requireApiLogin, getMyBookings);
 
 /**
  * @swagger
