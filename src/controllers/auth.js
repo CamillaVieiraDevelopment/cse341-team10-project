@@ -211,13 +211,13 @@ const login = async (req, res, next) => {
                 }
             });
         });
-
-        return res.redirect('/');
-    } catch (error) {
-        return next(error);
-    }
-};
-
+                return res.redirect(
+            user.role.name === 'admin' ? '/admin' : '/dashboard'
+                );
+            } catch (error) {
+                return next(error);
+            }
+        };
 const logout = (req, res, next) => {
     req.session.destroy((error) => {
         if (error) {

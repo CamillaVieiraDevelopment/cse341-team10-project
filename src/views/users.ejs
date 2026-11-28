@@ -1,0 +1,39 @@
+
+<%- include('./partials/header', { title: 'User Administration' }) %>
+
+<section class="content">
+    <h1>User Administration</h1>
+
+    <p>Manage and review registered users.</p>
+
+    <% if (users.length === 0) { %>
+        <p>No registered users found.</p>
+    <% } else { %>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach((account) => { %>
+                        <tr>
+                            <td><%= account.name %></td>
+                            <td><%= account.username %></td>
+                            <td><%= account.email %></td>
+                            <td><%= account.role?.name || 'Unknown' %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    <% } %>
+
+    <p><a href="/admin">Back to Admin Dashboard</a></p>
+</section>
+
+<%- include('./partials/footer') %>

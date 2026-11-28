@@ -1,0 +1,27 @@
+﻿
+<%- include('./partials/header', { title: 'My Dashboard' }) %>
+
+<section class="content">
+    <h1>Welcome, <%= user.name %>!</h1>
+
+    <h2>My Bookings</h2>
+    <p>Here you can see all bookings associated with your account.</p>
+
+    <div id="bookings-list" aria-live="polite">
+        <p>Loading your bookings...</p>
+    </div>
+
+    <h2>Administration</h2>
+    <ul>
+        <li>
+            <a href="/bookings-admin">Booking Administration</a>
+        </li>
+        <li>
+            <a href="/users-admin">User Administration</a>
+        </li>
+    </ul>
+</section>
+
+<script src="/js/dashboard.js" defer></script>
+
+<%- include('./partials/footer') %>
