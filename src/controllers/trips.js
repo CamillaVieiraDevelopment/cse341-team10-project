@@ -6,13 +6,23 @@ import { getDb } from '../db/connect.js';
 
 const getAllTripsHandler = async (req, res) => {
     try {
-        const { page = '1', limit = '10' } = req.query;
+        const {
+            page = '1',
+            limit = '10',
+            region = '',
+            season = '',
+            search = ''
+        } = req.query;
 
         const isValidPositiveInteger = (value) =>
             typeof value === 'string' &&
             /^\d+$/.test(value) &&
             Number.isSafeInteger(Number(value)) &&
             Number(value) > 0;
+
+        const isValidOptionalString = (value, maxLength) =>
+            typeof value === 'string' &&
+            value.length <= maxLength;
 
         if (!isValidPositiveInteger(page) || !isValidPositiveInteger(limit)) {
             return res.status(400).json({
@@ -29,9 +39,26 @@ const getAllTripsHandler = async (req, res) => {
             });
         }
 
+        if (
+            !isValidOptionalString(region, 50) ||
+            !isValidOptionalString(season, 50) ||
+            !isValidOptionalString(search, 100)
+        ) {
+            return res.status(400).json({
+                message: 'Region and season must be strings up to 50 characters, and search must be a string up to 100 characters.'
+            });
+        }
+
+        const filters = {
+            region: region.trim(),
+            season: season.trim(),
+            search: search.trim()
+        };
+
         const result = await getAllTrips({
             page: currentPage,
-            limit: pageSize
+            limit: pageSize,
+            ...filters
         });
 
         return res.status(200).json(result);
